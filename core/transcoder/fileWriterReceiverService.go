@@ -11,6 +11,7 @@ import (
 	"net/http"
 
 	"github.com/owncast/owncast/config"
+	"github.com/owncast/owncast/core/transcription"
 	"github.com/owncast/owncast/utils"
 	log "github.com/sirupsen/logrus"
 )
@@ -84,6 +85,7 @@ func (s *FileWriterReceiverService) uploadHandler(w http.ResponseWriter, r *http
 
 func (s *FileWriterReceiverService) fileWritten(path string) {
 	if utils.GetRelativePathFromAbsolutePath(path) == "hls/stream.m3u8" {
+	  transcription.RewriteMasterFile(path)
 		s.callbacks.MasterPlaylistWritten(path)
 	} else if strings.HasSuffix(path, ".ts") {
 		s.callbacks.SegmentWritten(path)

@@ -13,6 +13,7 @@ import (
 	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/core/rtmp"
 	"github.com/owncast/owncast/core/transcoder"
+	"github.com/owncast/owncast/core/transcription"
 	"github.com/owncast/owncast/core/webhooks"
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/utils"
@@ -58,6 +59,7 @@ func setStreamAsConnected() {
 	if s3Config.Enabled {
 		segmentPath = config.PrivateHLSStoragePath
 	}
+	go transcription.SetConnected()
 
 	go func() {
 		_transcoder = transcoder.NewTranscoder()
@@ -84,6 +86,7 @@ func SetStreamAsDisconnected() {
 
 	transcoder.StopThumbnailGenerator()
 	rtmp.Disconnect()
+	go transcription.SetDisconnected()
 
 	if _yp != nil {
 		_yp.Stop()

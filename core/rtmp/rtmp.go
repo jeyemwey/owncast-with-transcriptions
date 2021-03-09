@@ -89,9 +89,9 @@ func HandleConn(c *rtmp.Conn, nc net.Conn) {
 	log.Infoln("Inbound stream connected.")
 	_setStreamAsConnected()
 
-	pipePath := utils.GetTemporaryPipePath()
-	if !utils.DoesFileExists(pipePath) {
-		err := syscall.Mkfifo(pipePath, 0666)
+	streamPipePath := utils.GetTemporaryPipePath()
+	if !utils.DoesFileExists(streamPipePath) {
+		err := syscall.Mkfifo(streamPipePath, 0666)
 		if err != nil {
 			log.Fatalln(err)
 		}
@@ -100,13 +100,27 @@ func HandleConn(c *rtmp.Conn, nc net.Conn) {
 	_hasInboundRTMPConnection = true
 	_rtmpConnection = nc
 
-	f, err := os.OpenFile(pipePath, os.O_RDWR, os.ModeNamedPipe)
-	_pipe = f
+	streamPipeHandle, err := os.OpenFile(streamPipePath, os.O_RDWR, os.ModeNamedPipe)
+	_pipe = streamPipeHandle
 	if err != nil {
-		log.Fatalln("unable to open", pipePath, "and will exit")
+		log.Fatalln("unable to open", streamPipePath, "and will exit")
+	}
+	streamPipeMuxer := flv.NewMuxer(streamPipeHandle)
+
+	transcriptionPath := utils.GetTemporaryTranscriptionPipePath()
+	if !utils.DoesFileExists(transcriptionPath) {
+		err := syscall.Mkfifo(transcriptionPath, 0666)
+		if err != nil {
+		log.Fatalln(err)
+		}
 	}
 
-	w := flv.NewMuxer(f)
+	transcriptionFileHandle, err := os.OpenFile(transcriptionPath, os.O_RDWR, os.ModeNamedPipe)
+	if err != nil {
+		log.Fatalln("unable to open", streamPipePath, "and will exit")
+	}
+	transcriptionPipeMuxer := flv.NewMuxer(transcriptionFileHandle)
+
 
 	for {
 		if !_hasInboundRTMPConnection {
@@ -133,10 +147,16 @@ func HandleConn(c *rtmp.Conn, nc net.Conn) {
 			return
 		}
 
-		if err := w.WritePacket(pkt); err != nil {
-			log.Errorln("unable to write rtmp packet", err)
-			handleDisconnect(nc)
-			return
+		if err := streamPipeMuxer.WritePacket(pkt); err != nil {
+		log.Errorln("unable to write rtmp packet to stream pipe", err)
+		handleDisconnect(nc)
+		return
+		}
+
+		if err := transcriptionPipeMuxer.WritePacket(pkt); err != nil {
+		log.Errorln("unable to write rtmp packet to transcription pipe", err)
+		handleDisconnect(nc)
+		return
 		}
 	}
 }

@@ -25,6 +25,11 @@ func GetTemporaryPipePath() string {
 	return filepath.Join(os.TempDir(), "streampipe.flv")
 }
 
+// Same as GetTemporaryPipePath but for the Transcription Pipe file
+func GetTemporaryTranscriptionPipePath() string {
+  return filepath.Join(os.TempDir(), "transcriptionpipe.flv")
+}
+
 // DoesFileExists checks if the file exists.
 func DoesFileExists(name string) bool {
 	if _, err := os.Stat(name); err != nil {

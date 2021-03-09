@@ -18,5 +18,19 @@ jobs:
         with:
           go-version: "^1"
 
+      # https://docs.microsoft.com/en-us/azure/cognitive-services/speech-service/quickstarts/setup-platform?tabs=dotnet%2Clinux%2Cjre%2Cbrowser&pivots=programming-language-go
+      - name: Install the Speech SDK
+        run: |
+          sudo apt-get update
+          sudo apt-get install build-essential libssl1.0.0 libasound2 wget
+          export SPEECHSDK_ROOT="$HOME/speechsdk"
+          mkdir -p "$SPEECHSDK_ROOT"
+          wget -O SpeechSDK-Linux.tar.gz https://aka.ms/csspeech/linuxbinary
+          tar --strip 1 -xzf SpeechSDK-Linux.tar.gz -C "$SPEECHSDK_ROOT"
+          ls -l "$SPEECHSDK_ROOT"
+          export CGO_CFLAGS="-I$SPEECHSDK_ROOT/include/c_api"
+          export CGO_LDFLAGS="-L$SPEECHSDK_ROOT/lib/<architecture> -lMicrosoft.CognitiveServices.Speech.core"
+          export LD_LIBRARY_PATH="$SPEECHSDK_ROOT/lib/<architecture>:$LD_LIBRARY_PATH"
+      
       - name: Run tests
         run: go test ./...

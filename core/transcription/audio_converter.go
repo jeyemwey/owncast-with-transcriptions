@@ -44,8 +44,8 @@ func StartAudioTranscodingForTranscriptionService() {
     pcmLength, err := stdout.Read(pcmChunk)
 
     if pcmLength > 0 {
-      // pcmChunk[:pcmLength]
-      // TODO do something with these bytes
+      validPcmBytes := pcmChunk[:pcmLength]
+      UsedTranscriptionService.HandlePcmData(validPcmBytes)
     }
 
     if err != nil {

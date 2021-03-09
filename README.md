@@ -12,11 +12,10 @@ For any issues besides the transcription, please visit the [Owncast issues page]
 
 1. Ensure you have the gcc compiler configured.
 1. Install the [Go toolchain](https://golang.org/dl/).
+1. Install the [Microsoft Azure Speech SDK for Go](https://docs.microsoft.com/en-us/azure/cognitive-services/speech-service/quickstarts/setup-platform?tabs=dotnet%2Clinux%2Cjre%2Cbrowser&pivots=programming-language-go)
 1. Clone the repo.  `git clone https://github.com/owncast/owncast`
-1. `go run main.go pkged.go` will run from source.
+1. `./startWithAzure.sh` will run from source.
 1. Point your [broadcasting software](https://owncast.online/docs/broadcasting/) at your new server and start streaming.
-
-There is also a supplied `Dockerfile` so you can spin it up from source with little effort.  [Read more about running from source](https://owncast.online/docs/building/).
 
 <!-- LICENSE -->
 ## License

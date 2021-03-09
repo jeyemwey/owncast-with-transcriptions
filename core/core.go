@@ -13,6 +13,7 @@ import (
 	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/core/rtmp"
 	"github.com/owncast/owncast/core/transcoder"
+	"github.com/owncast/owncast/core/transcription"
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/utils"
 	"github.com/owncast/owncast/yp"
@@ -46,6 +47,11 @@ func Start() error {
 		log.Error("failed to setup the stats")
 		return err
 	}
+
+	if err := transcription.SetupTranscription(); err != nil {
+	  log.Error("failed to setup the transcription")
+	  return err
+  	}
 
 	// The HLS handler takes the written HLS playlists and segments
 	// and makes storage decisions.  It's rather simple right now

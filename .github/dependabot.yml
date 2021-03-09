@@ -11,8 +11,7 @@ updates:
     schedule:
       interval: "daily"
     reviewers:
-      - "gingervitis"
-      - "gabek"
+      - "jeyemwey"
 
   - package-ecosystem: "gomod"
     directory: "/"
@@ -20,4 +19,4 @@ updates:
     schedule:
       interval: "daily"
     reviewers:
-      - "gabek"
+      - "jeyemwey"

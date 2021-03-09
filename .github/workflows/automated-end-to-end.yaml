@@ -1,6 +1,7 @@
 name: Automated end to end tests
 
 on:
+
   push:
     # branches:
     #   - master

@@ -17,6 +17,18 @@ fi
 
 pushd ../.. > /dev/null
 
+## ADD AZURE SPEECH SDK
+sudo apt-get update
+sudo apt-get install build-essential libssl1.0.0 libasound2 wget
+export SPEECHSDK_ROOT="$HOME/speechsdk"
+mkdir -p "$SPEECHSDK_ROOT"
+wget -O SpeechSDK-Linux.tar.gz https://aka.ms/csspeech/linuxbinary
+tar --strip 1 -xzf SpeechSDK-Linux.tar.gz -C "$SPEECHSDK_ROOT"
+ls -l "$SPEECHSDK_ROOT"
+export CGO_CFLAGS="-I$SPEECHSDK_ROOT/include/c_api"
+export CGO_LDFLAGS="-L$SPEECHSDK_ROOT/lib/<architecture> -lMicrosoft.CognitiveServices.Speech.core"
+export LD_LIBRARY_PATH="$SPEECHSDK_ROOT/lib/<architecture>:$LD_LIBRARY_PATH"
+      
 # Build and run owncast from source
 go build -o owncast main.go pkged.go
 ./owncast -database $TEMP_DB &

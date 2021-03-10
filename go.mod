@@ -6,7 +6,6 @@ require (
 	github.com/Microsoft/cognitive-services-speech-sdk-go v1.15.0
 	github.com/StackExchange/wmi v0.0.0-20190523213315-cbe66965904d // indirect
 	github.com/amalfra/etag v0.0.0-20190921100247-cafc8de96bc5
-	github.com/asticode/go-astisub v0.12.0
 	github.com/aws/aws-sdk-go v1.37.26
 	github.com/go-ole/go-ole v1.2.4 // indirect
 	github.com/grafov/m3u8 v0.11.1
@@ -20,7 +19,7 @@ require (
 	github.com/oschwald/geoip2-golang v1.5.0
 	github.com/schollz/sqlite3dump v1.2.4
 	github.com/shirou/gopsutil v2.20.9+incompatible
-	github.com/sirupsen/logrus v1.8.0
+	github.com/sirupsen/logrus v1.8.1
 	github.com/teris-io/shortid v0.0.0-20171029131806-771a37caa5cf
 	github.com/yuin/goldmark v1.3.2
 	golang.org/x/mod v0.4.1

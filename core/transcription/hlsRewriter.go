@@ -1,10 +1,17 @@
 package transcription
 
 import (
+	"net/http"
 	"os"
+	"strconv"
+	"strings"
 
+	"github.com/owncast/owncast/config"
+	"github.com/owncast/owncast/core/data"
 	log "github.com/sirupsen/logrus"
 )
+
+const SUBTITLES_PLAYLIST_FILE = "subtitles.m3u8"
 
 func RewriteMasterFile(path string) {
   file, err := os.OpenFile(path, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
@@ -20,10 +27,55 @@ func RewriteMasterFile(path string) {
     "NAME=\"English\"," +
     "DEFAULT=NO," +
     "FORCED=NO," +
-    "URI=\"subtitles.m3u8\"," +
+    "URI=\"" + SUBTITLES_PLAYLIST_FILE + "\"," +
     "LANGUAGE=\"en\"\n"
 
   if _, err := file.WriteString(webVTTStaticText); err != nil {
     log.Error("Cannot append HLS master file", path, err)
+  }
+}
+
+func makePlaylistFromWebVttFiles(files []*WebVttFile, renderCounter int) (f File) {
+
+  targetDuration := strconv.Itoa(data.GetStreamLatencyLevel().SecondsPerSegment)
+  mediaSequence := strconv.Itoa(renderCounter)
+
+  f.FileName = SUBTITLES_PLAYLIST_FILE
+  f.FileContent = "#EXTM3U\n" +
+    "#EXT-X-TARGETDURATION:" + targetDuration + "\n" +
+    "#EXT-X-VERSION:3\n" +
+    "#EXT-X-MEDIA-SEQUENCE:" + mediaSequence + "\n"
+
+  for _, file := range files {
+    f.FileContent += "\n" +
+      "#EXTINF:" + targetDuration + "\n" +
+      file.FileName
+  }
+
+
+
+  return
+}
+
+// Transmit the WebVtt file to the FileWriterReceiverService. From there, it
+// will be sent to the configured storage provider (currently local or s3).
+func (w *File) Transmit() {
+  bodyReader := strings.NewReader(w.FileContent)
+
+  req, err := http.NewRequest(http.MethodPut, "http://127.0.0.1:"+config.InternalHLSListenerPort+"/"+w.FileName, bodyReader)
+  if err != nil {
+    log.Error("Cannot send request to Internal HLS Receiver")
+  }
+
+  client := &http.Client{}
+  resp, err := client.Do(req)
+
+  if err != nil {
+    log.Error("Unable to perform request: ", err)
+    return
+  }
+
+  if resp.StatusCode != http.StatusOK {
+    log.Error("HLS Receiver could not process request.", resp)
   }
 }

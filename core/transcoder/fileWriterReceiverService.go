@@ -89,7 +89,7 @@ func (s *FileWriterReceiverService) fileWritten(path string) {
 		s.callbacks.MasterPlaylistWritten(path)
 	} else if strings.HasSuffix(path, ".ts") {
 		s.callbacks.SegmentWritten(path)
-	} else if strings.HasSuffix(path, ".m3u8") {
+	} else if strings.HasSuffix(path, ".m3u8") || strings.HasSuffix(path, ".webvtt") {
 		s.callbacks.VariantPlaylistWritten(path)
 	}
 }

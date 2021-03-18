@@ -1,6 +1,7 @@
 package transcription
 
 import (
+  log "github.com/sirupsen/logrus"
   "sync"
   "time"
 )
@@ -20,5 +21,10 @@ func SetConnected() {
 
 func SetDisconnected() {
   go UsedTranscriptionService.SetDisconnected()
-  webVttRenderTicker.Stop()
+
+  if webVttRenderTicker == nil {
+    log.Debug("Trying to stop timer that was not set")
+  } else {
+    webVttRenderTicker.Stop()
+  }
 }

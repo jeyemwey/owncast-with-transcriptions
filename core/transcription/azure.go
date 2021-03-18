@@ -22,9 +22,6 @@ type AzureTranscriptionService struct {
 
 func (a *AzureTranscriptionService) SetConnected() {
 
-  subscription := "a866dfa9022c4e52994ec9e67ac46be9"
-  region := "westeurope"
-
   a.stream, a.err = audio.CreatePushAudioInputStream()
   log.Info("Started Audio Stream")
   if a.err != nil {
@@ -40,12 +37,12 @@ func (a *AzureTranscriptionService) SetConnected() {
     log.Error("Got an error: ", a.err)
     return
   }
-  a.config, a.err = speech.NewSpeechConfigFromSubscription(subscription, region)
+  a.config, a.err = speech.NewSpeechConfigFromSubscription(azureSubscription, azureRegion)
   if a.err != nil {
     log.Error("Got an error: ", a.err)
     return
   }
-  a.err = a.config.SetSpeechRecognitionLanguage("en-US")
+  a.err = a.config.SetSpeechRecognitionLanguage(azureLanguage)
   if a.err != nil {
     log.Error("Got an error: ", a.err)
     return

@@ -8,7 +8,14 @@ This fork appeared after the [v0.0.6 release](https://owncast.online/releases/ow
 
 For any issues besides the transcription, please visit the [Owncast issues page](https://github.com/owncast/owncast/issues) and our [RocketChat](https://owncast.rocket.chat).
 
-## Building from Source
+## Building from Source with Google integration
+
+1. Make sure you have a GCP account with a project and a service account. Activate the "Speech-to-Text" feature and download a JSON key.
+2. Clone the repo.
+3. Edit `startWithGoogle.sh` to contain the path to your key file.
+4. `./startWithGoogle.sh`
+
+## Building from Source with Azure integration
 
 1. Ensure you have the gcc compiler configured.
 1. Install the [Go toolchain](https://golang.org/dl/).

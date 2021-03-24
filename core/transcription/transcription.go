@@ -1,6 +1,7 @@
 package transcription
 
 import (
+  "encoding/json"
   "fmt"
   log "github.com/sirupsen/logrus"
   "sync"
@@ -16,7 +17,7 @@ var (
   numberOfChoppedSegments    int32
 )
 
-var UsedTranscriptionService = GetInstanceOfAzureTranscriptionService()
+var UsedTranscriptionService = GetInstanceOfGoogleTranscriptionService()
 
 func SetupTranscription() error {
   UsedTranscriptionService.SetTranscriptionReceiver(transcriptionReceiver)
@@ -105,4 +106,13 @@ func WebVttRenderScheduler() *time.Ticker {
   }()
 
   return ticker
+}
+
+func logJson(u interface{}) {
+ b, err := json.Marshal(u)
+ if err != nil {
+   log.Error(err)
+   return
+ }
+ log.Info(string(b))
 }

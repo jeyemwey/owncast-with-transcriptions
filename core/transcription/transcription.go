@@ -40,9 +40,9 @@ func transcriptionReceiver(tr Recognition) {
   streamConnectedOnce.Do(func() {
     webVttRenderTicker = WebVttRenderScheduler()
     recognitionLatency = time.Since(streamConnectedTime)
+    numberOfChoppedSegments = 1
   })
 
-  numberOfChoppedSegments = numberOfChoppedSegments + 1
   tr.Number = numberOfChoppedSegments
 
   crs := tr.Chop(data.GetStreamLatencyLevel().SecondsPerSegment)
@@ -55,6 +55,7 @@ func transcriptionReceiver(tr Recognition) {
     subtitleSegments[dToStr(cr.SegmentStart)].Recognitions =
       append(subtitleSegments[dToStr(cr.SegmentStart)].Recognitions, cr)
   }
+  numberOfChoppedSegments += int32(len(crs))
 }
 
 func dToStr(t time.Duration) string {
@@ -88,7 +89,6 @@ func WebVttRenderScheduler() *time.Ticker {
           webvttFile.FileName = fmt.Sprintf("subtitles%d.webvtt", renderCounter)
           webvttFile.FileContent = webvttFile.AsWebVtt()
           webvttFile.Transmit()
-          logJson(webvttFile)
 
           if len(filesforPlaylist) > 2 {
             filesforPlaylist = filesforPlaylist[1:] // Drop oldest item and

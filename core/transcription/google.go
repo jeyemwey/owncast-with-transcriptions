@@ -1,12 +1,11 @@
 package transcription
 
 import (
+  speech "cloud.google.com/go/speech/apiv1"
   "context"
   log "github.com/sirupsen/logrus"
-  "io"
-
-  speech "cloud.google.com/go/speech/apiv1"
   speechpb "google.golang.org/genproto/googleapis/cloud/speech/v1"
+  "io"
 )
 
 type GoogleTranscriptionService struct {
@@ -44,17 +43,20 @@ func (g *GoogleTranscriptionService) SetConnected() {
   if g.err != nil {
     log.Fatal(g.err)
   }
+  log.Info("Started StreamingRecognize with Google")
   // Send the initial configuration message.
   if g.err = g.stream.Send(&speechpb.StreamingRecognizeRequest{
     StreamingRequest: &speechpb.StreamingRecognizeRequest_StreamingConfig{
 
       StreamingConfig: &speechpb.StreamingRecognitionConfig{
-        Config: &speechpb.RecognitionConfig{
+          Config: &speechpb.RecognitionConfig{
           Encoding:                   speechpb.RecognitionConfig_LINEAR16,
           SampleRateHertz:            16000,
           LanguageCode:               gcpLanguage,
           EnableAutomaticPunctuation: true,
+          MaxAlternatives: 8,
         },
+        InterimResults: true,
       },
     },
   }); g.err != nil {
@@ -66,6 +68,9 @@ func (g *GoogleTranscriptionService) SetConnected() {
     return
   }
 
+  //lastResultEndTime := 0 * time.Nanosecond
+  log.Info("Started looking for responses from Google")
+
   for {
     resp, err := g.stream.Recv()
     if err == io.EOF {
@@ -75,17 +80,26 @@ func (g *GoogleTranscriptionService) SetConnected() {
       log.Fatalf("Cannot stream results: %v", err)
     }
 
-    logJson(resp)
-
     if err := resp.Error; err != nil {
       // Workaround while the API doesn't give a more informative error.
       if err.Code == 3 || err.Code == 11 {
-        log.Print("WARNING: Speech recognition request exceeded limit of 60 seconds.")
+        log.Warn("Speech recognition request exceeded limit of 300 seconds.")
       }
       log.Fatalf("Could not recognize: %v", err)
     }
     for _, result := range resp.Results {
-      log.Infof("Result: %+v\n", result)
+      log.Infof("Got a result: %+v\n", result)
+
+      //endTime := result.GetResultEndTime().AsDuration()
+      //recognition := Recognition{
+      //  Text:         result.GetAlternatives()[0].Transcript,
+      //  Begin:        lastResultEndTime,
+      //  End:          endTime,
+      //  Duration:     endTime - lastResultEndTime,
+      //}
+      //lastResultEndTime = endTime
+
+      //g.TranscriptionReceiver(recognition)
     }
   }
 
@@ -98,6 +112,11 @@ func (g *GoogleTranscriptionService) SetDisconnected() {
 }
 
 func (g *GoogleTranscriptionService) HandlePcmData(pcmData []byte) {
+  if g.stream == nil {
+    log.Error("g.stream is not ready yet, possible NPE.")
+    return
+  }
+
   if err := g.stream.Send(&speechpb.StreamingRecognizeRequest{
     StreamingRequest: &speechpb.StreamingRecognizeRequest_AudioContent{
       AudioContent: pcmData,

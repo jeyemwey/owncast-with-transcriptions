@@ -38,6 +38,8 @@ import {
   WIDTH_SINGLE_COL,
 } from './utils/constants.js';
 
+import Subtitles from "./components/subtitles.js";
+
 export default class App extends Component {
   constructor(props, context) {
     super(props, context);
@@ -515,6 +517,10 @@ export default class App extends Component {
             ></video>
             ${poster}
           </div>
+
+          <${Subtitles}
+            websocket=${websocket}
+          />
 
           <section
             id="stream-info"

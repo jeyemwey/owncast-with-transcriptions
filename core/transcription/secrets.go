@@ -7,3 +7,6 @@ const azureSubscription = "a866dfa9022c4e52994ec9e67ac46be9"
 const azureRegion = "westeurope"
 const azureLanguage = "en-US"
 const gcpLanguage = "en-UK"
+
+
+const webSocketSubtitlesType = "SUBTITLE"

@@ -1,11 +1,12 @@
 package transcription
 
 import (
-  speech "cloud.google.com/go/speech/apiv1"
-  "context"
-  log "github.com/sirupsen/logrus"
-  speechpb "google.golang.org/genproto/googleapis/cloud/speech/v1"
-  "io"
+	"context"
+	"io"
+
+	speech "cloud.google.com/go/speech/apiv1"
+	log "github.com/sirupsen/logrus"
+	speechpb "google.golang.org/genproto/googleapis/cloud/speech/v1"
 )
 
 type GoogleTranscriptionService struct {
@@ -88,7 +89,21 @@ func (g *GoogleTranscriptionService) SetConnected() {
       log.Fatalf("Could not recognize: %v", err)
     }
     for _, result := range resp.Results {
-      log.Infof("Got a result: %+v\n", result)
+
+      if result.Stability < 0.6 || result.IsFinal {
+        continue
+      }
+
+      //log.Infof("Got a result: %+v\n", result)
+
+      bestAlternative := result.GetAlternatives()[0]
+      for _, a := range result.GetAlternatives() {
+        if a.Confidence > bestAlternative.Confidence {
+          bestAlternative = a
+        }
+      }
+
+      SendTranscriptionToWebsocket(bestAlternative.Transcript)
 
       //endTime := result.GetResultEndTime().AsDuration()
       //recognition := Recognition{

@@ -12,6 +12,7 @@ export default class Subtitles extends Component {
     this.state = {
       currentSubtitle: "", //"<p>This is the place for some very long subtitles that might span one or two or even more lines which is totally fine because we thought about that during development.</p>",
       webSocketConnected: true,
+      queuedSubtitles: [], // type: { body: string, timeSinceBegin: number }
     };
     this.websocket = null;
     this.websocketConnected = this.websocketConnected.bind(this);
@@ -50,20 +51,17 @@ export default class Subtitles extends Component {
   }
 
   receivedWebsocketMessage(message) {
-    // console.log(message);
     const {
-      id: messageId,
-      type: messageType,
-      timestamp: messageTimestamp,
-      visible: messageVisible,
-      body: messageBody
+      body,
+      type,
+      timeSinceBegin
     } = message;
 
-    if (messageType == 'SUBTITLE') {
-      setTimeout(() => {
-        this.setState({currentSubtitle: messageBody});
-      }, 4000); // this needs to be recalibrated.
+    if (type != 'SUBTITLE') {
+      return;
     }
+
+    this.setState({currentSubtitle: body});
   }
 
   render() {

@@ -65,6 +65,7 @@ export default class App extends Component {
       // status
       streamStatusMessage: MESSAGE_OFFLINE,
       viewerCount: '',
+      currentStreamTime: 0,
 
       // dom
       windowWidth: window.innerWidth,

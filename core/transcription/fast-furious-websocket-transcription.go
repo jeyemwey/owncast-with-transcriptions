@@ -16,7 +16,7 @@ var lwp_mx sync.Mutex
 // client that is connected. To reduce the network load, we need a certain
 // duration between the pushs. Every request to push that is too close to the
 // last request is dropped to keep the latency down.
-func SendTranscriptionToWebsocket(body string) {
+func SendTranscriptionToWebsocket(body string, ns_since_begin int64) {
   lwp_mx.Lock()
   defer lwp_mx.Unlock()
   if time.Since(lastWebsocketPush) < 200*time.Millisecond {
@@ -25,11 +25,12 @@ func SendTranscriptionToWebsocket(body string) {
   lastWebsocketPush = time.Now()
 
   go chat.SendMessage(models.ChatEvent{
-    Body:        lastSentence(body),
-    ID:          fmt.Sprintf("subtitle-%d", time.Now().Unix()),
-    MessageType: "SUBTITLE",
-    Timestamp:   time.Now(),
-    Ephemeral:   true,
+    Body:           lastSentence(body),
+    ID:             fmt.Sprintf("subtitle-%d", time.Now().Unix()),
+    MessageType:    "SUBTITLE",
+    Timestamp:      time.Now(),
+    TimeSinceBegin: ns_since_begin,
+    Ephemeral:      true,
   })
 }
 

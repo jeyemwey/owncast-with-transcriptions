@@ -66,6 +66,8 @@ class OwncastPlayer {
 
     this.vjsPlayer = videojs(VIDEO_ID, VIDEO_OPTIONS);
 
+    window.vjsPlayer = this.vjsPlayer;
+
     this.addAirplay();
     this.vjsPlayer.ready(this.handleReady);
   }
@@ -95,6 +97,7 @@ class OwncastPlayer {
     this.vjsPlayer.on('playing', this.handlePlaying);
     this.vjsPlayer.on('volumechange', this.handleVolume);
     this.vjsPlayer.on('ended', this.handleEnded);
+    this.vjsPlayer.on('loadedmetadata', (ev) => console.log(ev));
 
     if (this.appPlayerReadyCallback) {
       // start polling

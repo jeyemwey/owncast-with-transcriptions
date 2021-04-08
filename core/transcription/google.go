@@ -103,7 +103,7 @@ func (g *GoogleTranscriptionService) SetConnected() {
         }
       }
 
-      SendTranscriptionToWebsocket(bestAlternative.Transcript)
+      SendTranscriptionToWebsocket(bestAlternative.Transcript, result.ResultEndTime.AsDuration().Nanoseconds())
 
       //endTime := result.GetResultEndTime().AsDuration()
       //recognition := Recognition{

@@ -4,6 +4,7 @@ import (
   "fmt"
   "github.com/owncast/owncast/core/chat"
   "github.com/owncast/owncast/models"
+  log "github.com/sirupsen/logrus"
   "strings"
   "sync"
   "time"
@@ -19,13 +20,15 @@ var lwp_mx sync.Mutex
 func SendTranscriptionToWebsocket(body string, ns_since_begin int64) {
   lwp_mx.Lock()
   defer lwp_mx.Unlock()
-  if time.Since(lastWebsocketPush) < 200*time.Millisecond {
+  if time.Since(lastWebsocketPush) < 5000*time.Millisecond {
     return
   }
   lastWebsocketPush = time.Now()
 
+  log.Infof("timeSinceBegin: %v; body: %s", ns_since_begin, body)
+
   go chat.SendMessage(models.ChatEvent{
-    Body:           lastSentence(body),
+    Body:           strings.TrimSpace(lastSentence(body)),
     ID:             fmt.Sprintf("subtitle-%d", time.Now().Unix()),
     MessageType:    "SUBTITLE",
     Timestamp:      time.Now(),

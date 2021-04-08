@@ -3,18 +3,24 @@ package transcription
 import (
 	"context"
 	"io"
+  "sync"
+  "time"
 
-	speech "cloud.google.com/go/speech/apiv1"
+  speech "cloud.google.com/go/speech/apiv1"
 	log "github.com/sirupsen/logrus"
 	speechpb "google.golang.org/genproto/googleapis/cloud/speech/v1"
 )
 
 type GoogleTranscriptionService struct {
-  TranscriptionReceiver TranscriptionReceiver
-  ctx                   context.Context
-  err                   error
-  client                *speech.Client
-  stream                speechpb.Speech_StreamingRecognizeClient
+  TranscriptionReceiver   TranscriptionReceiver
+  ctx                     context.Context
+  err                     error
+  client                  *speech.Client
+  stream                  speechpb.Speech_StreamingRecognizeClient
+  TimeConnectedResetMutex sync.Once
+  timeConnected           time.Time
+  setupPhase sync.WaitGroup
+  pcmChan chan []byte
 }
 
 var gts *GoogleTranscriptionService
@@ -34,6 +40,14 @@ func (g *GoogleTranscriptionService) SetTranscriptionReceiver(receiver Transcrip
 }
 
 func (g *GoogleTranscriptionService) SetConnected() {
+  g.TimeConnectedResetMutex.Do(func() {
+    g.timeConnected = time.Now()
+    g.pcmChan = make(chan []byte)
+    go g.SetupPcmChannelEnd()
+  })
+
+  g.setupPhase.Add(1)
+
   g.ctx = context.Background()
 
   g.client, g.err = speech.NewClient(g.ctx)
@@ -69,6 +83,8 @@ func (g *GoogleTranscriptionService) SetConnected() {
     return
   }
 
+  g.setupPhase.Done()
+
   //lastResultEndTime := 0 * time.Nanosecond
   log.Info("Started looking for responses from Google")
 
@@ -82,9 +98,15 @@ func (g *GoogleTranscriptionService) SetConnected() {
     }
 
     if err := resp.Error; err != nil {
-      // Workaround while the API doesn't give a more informative error.
+      // Code   Message
+      // 11     Exceeded maximum allowed stream duration of 305 seconds.
       if err.Code == 3 || err.Code == 11 {
         log.Warn("Speech recognition request exceeded limit of 300 seconds.")
+        log.Warnf("%v", err)
+
+        // Reconnect the stream and create a new blocking for-loop in a new stream.
+        go g.SetConnected()
+        return
       }
       log.Fatalf("Could not recognize: %v", err)
     }
@@ -103,7 +125,7 @@ func (g *GoogleTranscriptionService) SetConnected() {
         }
       }
 
-      SendTranscriptionToWebsocket(bestAlternative.Transcript, result.ResultEndTime.AsDuration().Nanoseconds())
+      SendTranscriptionToWebsocket(bestAlternative.Transcript, time.Since(g.timeConnected).Nanoseconds())
 
       //endTime := result.GetResultEndTime().AsDuration()
       //recognition := Recognition{
@@ -117,26 +139,41 @@ func (g *GoogleTranscriptionService) SetConnected() {
       //g.TranscriptionReceiver(recognition)
     }
   }
-
 }
 
 func (g *GoogleTranscriptionService) SetDisconnected() {
   if err := g.stream.CloseSend(); err != nil {
     log.Fatalf("Could not close stream: %v", err)
   }
+
+  close(g.pcmChan)
 }
 
 func (g *GoogleTranscriptionService) HandlePcmData(pcmData []byte) {
-  if g.stream == nil {
-    log.Error("g.stream is not ready yet, possible NPE.")
-    return
-  }
+  g.pcmChan <- pcmData
+}
 
-  if err := g.stream.Send(&speechpb.StreamingRecognizeRequest{
-    StreamingRequest: &speechpb.StreamingRecognizeRequest_AudioContent{
-      AudioContent: pcmData,
-    },
-  }); err != nil {
-    log.Printf("Could not send audio: %v", err)
+func (g *GoogleTranscriptionService) SetupPcmChannelEnd() {
+  for {
+    pcmData, more := <-g.pcmChan
+
+    if !more {
+      break
+    }
+
+    if g.stream == nil {
+      log.Error("g.stream is not ready yet, possible NPE.")
+      return
+    }
+
+    g.setupPhase.Wait()
+
+    if err := g.stream.Send(&speechpb.StreamingRecognizeRequest{
+      StreamingRequest: &speechpb.StreamingRecognizeRequest_AudioContent{
+        AudioContent: pcmData,
+      },
+    }); err != nil {
+      log.Printf("Could not send audio: %v", err)
+    }
   }
 }

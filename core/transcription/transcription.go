@@ -17,7 +17,7 @@ var (
   numberOfChoppedSegments    int32
 )
 
-var UsedTranscriptionService = GetInstanceOfAzureTranscriptionService()
+var UsedTranscriptionService = GetInstanceOfAwsTranscriptionService()
 
 func SetupTranscription() error {
   UsedTranscriptionService.SetTranscriptionReceiver(transcriptionReceiver)

@@ -4,6 +4,7 @@ go 1.14
 
 require (
 	cloud.google.com/go v0.80.0
+	github.com/Microsoft/cognitive-services-speech-sdk-go v1.16.0
 	github.com/StackExchange/wmi v0.0.0-20190523213315-cbe66965904d // indirect
 	github.com/amalfra/etag v0.0.0-20190921100247-cafc8de96bc5
 	github.com/aws/aws-sdk-go v1.37.28

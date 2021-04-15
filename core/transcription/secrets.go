@@ -5,5 +5,5 @@ package transcription
 // package, but that's for future me.
 const azureSubscription = "a866dfa9022c4e52994ec9e67ac46be9"
 const azureRegion = "westeurope"
-const azureLanguage = "en-US"
+const azureLanguage = "en-GB"
 const gcpLanguage = "en-UK"

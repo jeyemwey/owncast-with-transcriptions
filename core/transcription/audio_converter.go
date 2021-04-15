@@ -39,7 +39,7 @@ func StartAudioTranscodingForTranscriptionService() {
     return
   }
 
-  pcmChunk := make([]byte, 1024)
+  pcmChunk := make([]byte, pcmChunkLen)
   for {
     pcmLength, err := stdout.Read(pcmChunk)
 

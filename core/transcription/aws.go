@@ -74,9 +74,11 @@ func (a *AwsTranscriptionService) SetConnected()  {
           body := aws.StringValue(alt.Transcript)
           ns := FloatSecsToNanoSeconds(res.StartTime)
           //log.Infof("%f / %d: %s", *res.StartTime, ns, body)
-          go SendTranscriptionToWebsocket(body, ns)
+          if deliverymethod == "websockets" {
+            go SendTranscriptionToWebsocket(body, ns)
+          }
 
-          if !*res.IsPartial {
+          if !*res.IsPartial && deliverymethod == "webvtt" {
             // Only for final results
             transcriptionReceiver(Recognition{
               Text:  body,

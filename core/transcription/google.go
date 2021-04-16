@@ -85,7 +85,7 @@ func (g *GoogleTranscriptionService) SetConnected() {
 
   g.setupPhase.Done()
 
-  //lastResultEndTime := 0 * time.Nanosecond
+  lastResultEndTime := 0 * time.Nanosecond
   log.Info("Started looking for responses from Google")
 
   for {
@@ -124,19 +124,20 @@ func (g *GoogleTranscriptionService) SetConnected() {
           bestAlternative = a
         }
       }
+      if deliverymethod == "websockets" {
+        SendTranscriptionToWebsocket(bestAlternative.Transcript, time.Since(g.timeConnected).Nanoseconds())
+      } else if deliverymethod == "webvtt" {
+        endTime := result.GetResultEndTime().AsDuration()
+        recognition := Recognition{
+          Text:     result.GetAlternatives()[0].Transcript,
+          Begin:    lastResultEndTime,
+          End:      endTime,
+          Duration: endTime - lastResultEndTime,
+        }
+        lastResultEndTime = endTime
 
-      SendTranscriptionToWebsocket(bestAlternative.Transcript, time.Since(g.timeConnected).Nanoseconds())
-
-      //endTime := result.GetResultEndTime().AsDuration()
-      //recognition := Recognition{
-      //  Text:         result.GetAlternatives()[0].Transcript,
-      //  Begin:        lastResultEndTime,
-      //  End:          endTime,
-      //  Duration:     endTime - lastResultEndTime,
-      //}
-      //lastResultEndTime = endTime
-
-      //g.TranscriptionReceiver(recognition)
+        g.TranscriptionReceiver(recognition)
+      }
     }
   }
 }

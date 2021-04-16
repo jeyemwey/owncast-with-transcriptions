@@ -77,8 +77,8 @@ func WebVttRenderScheduler() *time.Ticker {
       case <-ticker.C:
         go func(renderCounter int) {
           searchString := dToStr(videoSegmentLength * time.Duration(renderCounter))
-          log.Info("Looking for: " + searchString + " in:")
-          logJson(subtitleSegments)
+          log.Info("Looking for: " + searchString)
+          // logJson(subtitleSegments)
 
           webvttFile, ok := subtitleSegments[searchString]
 
@@ -97,7 +97,7 @@ func WebVttRenderScheduler() *time.Ticker {
           filesforPlaylist = append(filesforPlaylist, webvttFile) // add the latest item to the playlist
 
           playlist := makePlaylistFromWebVttFiles(filesforPlaylist, renderCounter)
-          logJson(playlist)
+          // logJson(playlist)
           playlist.Transmit()
         }(renderCounter)
         renderCounter += 1

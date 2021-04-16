@@ -1,25 +1,27 @@
 package transcription
 
 import (
-	"net/http"
-	"os"
-	"strconv"
-	"strings"
+  "io/ioutil"
+  "net/http"
+  "strconv"
+  "strings"
 
-	"github.com/owncast/owncast/config"
-	"github.com/owncast/owncast/core/data"
-	log "github.com/sirupsen/logrus"
+  "github.com/owncast/owncast/config"
+  "github.com/owncast/owncast/core/data"
+  log "github.com/sirupsen/logrus"
 )
 
 const SUBTITLES_PLAYLIST_FILE = "subtitles.m3u8"
 
 func RewriteMasterFile(path string) {
-  file, err := os.OpenFile(path, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+
+  dat, err := ioutil.ReadFile(path)
   if err != nil {
-    log.Error("Cannot open HLS master file", path, err)
+    log.Errorf("Unable to read master file: %v", err)
     return
   }
-  defer file.Close()
+
+  master := string(dat)
 
   webVTTStaticText := "\n#EXT-X-MEDIA:" +
     "TYPE=SUBTITLES," +
@@ -30,8 +32,11 @@ func RewriteMasterFile(path string) {
     "URI=\"" + SUBTITLES_PLAYLIST_FILE + "\"," +
     "LANGUAGE=\"en\"\n"
 
-  if _, err := file.WriteString(webVTTStaticText); err != nil {
-    log.Error("Cannot append HLS master file", path, err)
+  newMaster := strings.ReplaceAll(master, ",CODECS", ",SUBTITLES=\"subs\",CODECS") + webVTTStaticText
+
+  err = ioutil.WriteFile(path, []byte(newMaster), 0644)
+  if err != nil {
+    log.Errorf("Unable to write master file: %v", err)
   }
 }
 

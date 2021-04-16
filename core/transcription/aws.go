@@ -7,6 +7,7 @@ import (
   tss "github.com/aws/aws-sdk-go/service/transcribestreamingservice"
   log "github.com/sirupsen/logrus"
   "io"
+  "time"
 )
 
 type AwsTranscriptionService struct {
@@ -72,8 +73,17 @@ func (a *AwsTranscriptionService) SetConnected()  {
         for _, alt := range res.Alternatives {
           body := aws.StringValue(alt.Transcript)
           ns := FloatSecsToNanoSeconds(res.StartTime)
-          //log.Infof("%d / %d: %s", res.StartTime, ns, body)
+          //log.Infof("%f / %d: %s", *res.StartTime, ns, body)
           go SendTranscriptionToWebsocket(body, ns)
+
+          if !*res.IsPartial {
+            // Only for final results
+            transcriptionReceiver(Recognition{
+              Text:  body,
+              Begin: time.Duration(FloatSecsToNanoSeconds(res.StartTime)) * time.Nanosecond,
+              End:   time.Duration(FloatSecsToNanoSeconds(res.EndTime)) * time.Nanosecond,
+            })
+          }
         }
       }
     default:

@@ -15,6 +15,10 @@ const SUBTITLES_PLAYLIST_FILE = "subtitles.m3u8"
 
 func RewriteMasterFile(path string) {
 
+  if deliverymethod != "webvtt" {
+    return
+  }
+
   dat, err := ioutil.ReadFile(path)
   if err != nil {
     log.Errorf("Unable to read master file: %v", err)

@@ -69,9 +69,20 @@ class OwncastPlayer {
     this.vjsPlayer = videojs(VIDEO_ID, VIDEO_OPTIONS);
 
     window.vjsPlayer = this.vjsPlayer;
+    window.videojs = this.vjsPlayer;
 
     this.addAirplay();
     this.vjsPlayer.ready(this.handleReady);
+
+    this.vjsPlayer.overlay({
+      content: 'Default overlay content',
+      debug: true,
+      overlays: [{
+        content: 'This is a test-overlay!',
+        start: 'play',
+        end: 'pause'
+      }]
+    });
   }
 
   setupPlayerCallbacks(callbacks) {

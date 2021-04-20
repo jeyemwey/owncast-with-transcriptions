@@ -1,25 +1,9 @@
-import { h, Component } from '/js/web_modules/preact.js';
-import htm from '/js/web_modules/htm.js';
-const html = htm.bind(h);
-
-import { OwncastPlayer } from './components/player.js';
-import SocialIconsList from './components/platform-logos-list.js';
-import UsernameForm from './components/chat/username.js';
-import VideoPoster from './components/video-poster.js';
 import Chat from './components/chat/chat.js';
-import Websocket from './utils/websocket.js';
-import { parseSecondsToDurationString, hasTouchScreen, getOrientation } from './utils/helpers.js';
-
-import {
-  addNewlines,
-  classNames,
-  clearLocalStorage,
-  debounce,
-  generateUsername,
-  getLocalStorage,
-  pluralize,
-  setLocalStorage,
-} from './utils/helpers.js';
+import UsernameForm from './components/chat/username.js';
+import SocialIconsList from './components/platform-logos-list.js';
+import { OwncastPlayer } from './components/player.js';
+import Subtitles from "./components/subtitles.js";
+import VideoPoster from './components/video-poster.js';
 import {
   HEIGHT_SHORT_WIDE,
   KEY_CHAT_DISPLAYED,
@@ -35,10 +19,24 @@ import {
   URL_CONFIG,
   URL_OWNCAST,
   URL_STATUS,
-  WIDTH_SINGLE_COL,
+  WIDTH_SINGLE_COL
 } from './utils/constants.js';
+import {
+  addNewlines,
+  classNames,
+  clearLocalStorage,
+  debounce,
+  generateUsername,
+  getLocalStorage, getOrientation, hasTouchScreen, parseSecondsToDurationString, pluralize,
+  setLocalStorage
+} from './utils/helpers.js';
+import Websocket from './utils/websocket.js';
+import htm from '/js/web_modules/htm.js';
+import { Component, h } from '/js/web_modules/preact.js';
+const html = htm.bind(h);
 
-import Subtitles from "./components/subtitles.js";
+
+
 
 export default class App extends Component {
   constructor(props, context) {
@@ -99,6 +97,7 @@ export default class App extends Component {
     // player events
     this.handlePlayerReady = this.handlePlayerReady.bind(this);
     this.handlePlayerPlaying = this.handlePlayerPlaying.bind(this);
+    this.handlePlayerPause = this.handlePlayerPause.bind(this);
     this.handlePlayerEnded = this.handlePlayerEnded.bind(this);
     this.handlePlayerError = this.handlePlayerError.bind(this);
 
@@ -122,6 +121,7 @@ export default class App extends Component {
     this.player.setupPlayerCallbacks({
       onReady: this.handlePlayerReady,
       onPlaying: this.handlePlayerPlaying,
+      onPause: this.handlePlayerPause,
       onEnded: this.handlePlayerEnded,
       onError: this.handlePlayerError,
     });
@@ -232,6 +232,13 @@ export default class App extends Component {
   handlePlayerPlaying() {
     this.setState({
       isPlaying: true,
+    });
+  }
+  
+  handlePlayerPause() {
+    console.log("Paused!");
+    this.setState({
+      isPlaying: false
     });
   }
 

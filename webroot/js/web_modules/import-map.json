@@ -9,6 +9,7 @@
     "preact": "./preact.js",
     "tailwindcss/dist/tailwind.min.css": "./tailwindcss/dist/tailwind.min.css",
     "video.js": "./video.js/core.js",
-    "video.js/core.js": "./videojs/core.js"
+    "video.js/core.js": "./videojs/core.js",
+    "videojs-overlay": "./video.js/overlay.js"
   }
 }

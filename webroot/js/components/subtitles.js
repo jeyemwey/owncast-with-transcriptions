@@ -10,7 +10,7 @@ export default class Subtitles extends Component {
     super(props, context);
 
     this.state = {
-      currentSubtitle: "", //"<p>This is the place for some very long subtitles that might span one or two or even more lines which is totally fine because we thought about that during development.</p>",
+      currentSubtitle: "",//"This is the place for some very long subtitles that might span one or two or even more lines which is totally fine because we thought about that during development.",
       webSocketConnected: true,
       queuedSubtitles: [], // type: { body: string, timeSinceBegin: number }
     };
@@ -57,16 +57,20 @@ export default class Subtitles extends Component {
       timeSinceBegin
     } = message;
 
+    if (!this.props.isPlaying) {
+      return;
+    }
+
     if (type != 'SUBTITLE') {
       return;
     }
 
-    this.setState({currentSubtitle: body});
+    this.setState({currentSubtitle: body.replace(/<[^>]*>/g, '')});
   }
 
   render() {
-    return html`<div id="subtitles-box" class="flex bg-black text-white text-3xl p-4">
-      <span class="w-8/12" dangerouslySetInnerHTML=${{ __html: this.state.currentSubtitle }}></span>
+    return html`<div id="subtitles-box" class="absolute z-50 left-0 p-4 w-8/12" style="bottom: 10rem">
+      <span class="bg-black text-white text-4xl leading-tight" dangerouslySetInnerHTML=${{ __html: this.state.currentSubtitle }}></span>
     </div>`
   }
 }

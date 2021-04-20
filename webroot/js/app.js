@@ -504,7 +504,11 @@ export default class App extends Component {
           </header>
         </div>
 
-        <main class=${mainClass}>
+        <main class="relative ${mainClass}">
+          <${Subtitles}
+            websocket=${websocket}
+            isPlaying=${this.state.isPlaying}
+          />
           <div
             id="video-container"
             class="flex owncast-video-container bg-black w-full bg-center bg-no-repeat flex flex-col items-center justify-start"
@@ -518,11 +522,6 @@ export default class App extends Component {
             ></video>
             ${poster}
           </div>
-
-          <${Subtitles}
-            websocket=${websocket}
-          />
-
           <section
             id="stream-info"
             aria-label="Stream status"

@@ -85,12 +85,13 @@ header {
 
 /* ************************************************ */
 
+#video-container, #subtitles-box {
+  margin-top: var(--header-height);
+}
 #video-container {
   height: var(--video-container-height);
-  margin-top: var(--header-height);
-  position: relative;
   width: 100%;
-
+  position: relative;
   min-height: 480px;
   max-height: calc(100vh - var(--header-height) - 3rem);
   background-size: 30%;

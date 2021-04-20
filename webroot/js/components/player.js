@@ -1,9 +1,9 @@
 // https://docs.videojs.com/player
 
-import videojs from '/js/web_modules/videojs/core.js';
-import '/js/web_modules/@videojs/http-streaming/dist/videojs-http-streaming.min.js';
-import { getLocalStorage, setLocalStorage } from '../utils/helpers.js';
 import { PLAYER_VOLUME, URL_STREAM } from '../utils/constants.js';
+import { getLocalStorage, setLocalStorage } from '../utils/helpers.js';
+import '/js/web_modules/@videojs/http-streaming/dist/videojs-http-streaming.min.js';
+import videojs from '/js/web_modules/videojs/core.js';
 
 const VIDEO_ID = 'video';
 
@@ -44,12 +44,14 @@ class OwncastPlayer {
 
     this.appPlayerReadyCallback = null;
     this.appPlayerPlayingCallback = null;
+    this.appPlayerPauseCallback = null;
     this.appPlayerEndedCallback = null;
 
     // bind all the things because safari
     this.startPlayer = this.startPlayer.bind(this);
     this.handleReady = this.handleReady.bind(this);
     this.handlePlaying = this.handlePlaying.bind(this);
+    this.handlePause = this.handlePause.bind(this);
     this.handleVolume = this.handleVolume.bind(this);
     this.handleEnded = this.handleEnded.bind(this);
     this.handleError = this.handleError.bind(this);
@@ -73,10 +75,11 @@ class OwncastPlayer {
   }
 
   setupPlayerCallbacks(callbacks) {
-    const { onReady, onPlaying, onEnded, onError } = callbacks;
+    const { onReady, onPlaying, onPause, onEnded, onError } = callbacks;
 
     this.appPlayerReadyCallback = onReady;
     this.appPlayerPlayingCallback = onPlaying;
+    this.appPlayerPauseCallback = onPause;
     this.appPlayerEndedCallback = onEnded;
     this.appPlayerErrorCallback = onError;
   }
@@ -95,6 +98,7 @@ class OwncastPlayer {
     this.log('on Ready');
     this.vjsPlayer.on('error', this.handleError);
     this.vjsPlayer.on('playing', this.handlePlaying);
+    this.vjsPlayer.on('paused', this.handlePause);
     this.vjsPlayer.on('volumechange', this.handleVolume);
     this.vjsPlayer.on('ended', this.handleEnded);
     this.vjsPlayer.on('loadedmetadata', (ev) => console.log(ev));
@@ -110,10 +114,18 @@ class OwncastPlayer {
   }
 
   handlePlaying() {
-    this.log('on Playing');
+    console.log('on Playing');
     if (this.appPlayerPlayingCallback) {
       // start polling
       this.appPlayerPlayingCallback();
+    }
+  }
+
+  handlePause() {
+    console.log('on pause');
+    if (this.appPlayerPauseCallback) {
+      // start polling
+      this.appPlayerPauseCallback();
     }
   }
 

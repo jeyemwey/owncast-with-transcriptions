@@ -4,6 +4,7 @@ import (
   "fmt"
   "github.com/owncast/owncast/core/chat"
   "github.com/owncast/owncast/models"
+  log "github.com/sirupsen/logrus"
   "strings"
   "sync"
   "time"

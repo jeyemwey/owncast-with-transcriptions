@@ -57,6 +57,8 @@ func (a *AwsTranscriptionService) SetConnected()  {
 
   a.pcmReader, a.pcmWriter = io.Pipe()
   a.streamContext = aws.BackgroundContext()
+  defer a.pcmWriter.Close()
+  defer a.pcmReader.Close()
 
   go func() {
     err := tss.StreamAudioFromReader(a.streamContext, a.stream, pcmChunkLen, a.pcmReader)
@@ -89,24 +91,25 @@ func (a *AwsTranscriptionService) SetConnected()  {
         }
       }
     default:
-      log.Fatalf("unexpected event, %T", event)
+      log.Errorf("unexpected event, %T", event)
     }
   }
 
   if err := a.stream.Err(); err != nil {
-    log.Fatalf("expect no error from stream, got %v", err)
+    log.Errorf("expect no error from stream, got %v", err)
   }
 }
 
 func (a *AwsTranscriptionService) SetDisconnected()  {
-  a.pcmWriter.Close()
   a.stream.Close()
 }
 
 func (a *AwsTranscriptionService) HandlePcmData(b []byte) {
   _, err := a.pcmWriter.Write(b)
   if err != nil {
-    log.Errorf("unable to write to writer: %v", err)
+    // Cannot write to writer when pipe is closed, e.g. because the stream stopped.
+    // TODO: Downgrade to Debug statement
+    log.Debugf("unable to write to writer: %v", err)
   }
 }
 

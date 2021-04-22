@@ -1,11 +1,14 @@
 // misc constants used throughout the app
 
+// export const URL_STATUS = `https://watch.owncast.online/api/status`;
 export const URL_STATUS = `/api/status`;
 export const URL_CHAT_HISTORY = `/api/chat`;
 export const URL_CUSTOM_EMOJIS = `/api/emoji`;
 export const URL_CONFIG = `/api/config`;
 
 // TODO: This directory is customizable in the config.  So we should expose this via the config API.
+// export const URL_STREAM = `https://devstreaming-cdn.apple.com/videos/streaming/examples/bipbop_16x9/bipbop_16x9_variant.m3u8`;
+// export const URL_STREAM = `https://watch.owncast.online/hls/stream.m3u8`;
 export const URL_STREAM = `/hls/stream.m3u8`;
 export const URL_WEBSOCKET = `${location.protocol === 'https:' ? 'wss' : 'ws'}://${location.host}/entry`;
 

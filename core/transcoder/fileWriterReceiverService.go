@@ -85,11 +85,12 @@ func (s *FileWriterReceiverService) uploadHandler(w http.ResponseWriter, r *http
 
 func (s *FileWriterReceiverService) fileWritten(path string) {
 	if utils.GetRelativePathFromAbsolutePath(path) == "hls/stream.m3u8" {
-	  transcription.RewriteMasterFile(path)
+	  	transcription.RewriteMasterFile(path)
 		s.callbacks.MasterPlaylistWritten(path)
-	} else if strings.HasSuffix(path, ".ts") {
+	} else if strings.HasSuffix(path, ".ts") || strings.HasSuffix(path, ".webvtt") {
+		go transcription.SaveSegmentPlayout(path)
 		s.callbacks.SegmentWritten(path)
-	} else if strings.HasSuffix(path, ".m3u8") || strings.HasSuffix(path, ".webvtt") {
+	} else if strings.HasSuffix(path, ".m3u8") {
 		s.callbacks.VariantPlaylistWritten(path)
 	}
 }

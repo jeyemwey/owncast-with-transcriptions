@@ -16,17 +16,20 @@ import (
 
 // ChatEvent represents a single chat message.
 type ChatEvent struct {
-  ClientID string `json:"-"`
+	ClientID string `json:"-"`
 
-  Author         string    `json:"author,omitempty"`
-  Body           string    `json:"body,omitempty"`
-  RawBody        string    `json:"-"`
-  ID             string    `json:"id"`
-  MessageType    EventType `json:"type"`
-  Visible        bool      `json:"visible"`
-  Timestamp      time.Time `json:"timestamp,omitempty"`
-  Ephemeral      bool      `json:"ephemeral,omitempty"`
-  TimeSinceBegin int64     `json:"timeSinceBegin,omitempty"`
+	Author      string    `json:"author,omitempty"`
+	Body        string    `json:"body,omitempty"`
+	RawBody     string    `json:"-"`
+	ID          string    `json:"id"`
+	MessageType EventType `json:"type"`
+	Visible     bool      `json:"visible"`
+	Timestamp   time.Time `json:"timestamp,omitempty"`
+	Ephemeral   bool      `json:"ephemeral,omitempty"`
+
+	// Transcription stuff
+	TimeSinceBegin    int64             `json:"timeSinceBegin,omitempty"`
+	ActiveHlsSegments map[string]string `json:"activeHlsSegments"`
 }
 
 // Valid checks to ensure the message is valid.
@@ -50,8 +53,8 @@ func (m *ChatEvent) RenderAndSanitizeMessageBody() {
 	m.RawBody = m.Body
 
 	if m.MessageType != "SUBTITLES" {
-    // Set the new, sanitized and rendered message body
-    m.Body = RenderAndSanitize(m.RawBody)
+		// Set the new, sanitized and rendered message body
+		m.Body = RenderAndSanitize(m.RawBody)
 	}
 }
 

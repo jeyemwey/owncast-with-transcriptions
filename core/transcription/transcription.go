@@ -17,7 +17,7 @@ var (
   numberOfChoppedSegments    int32
 )
 
-var UsedTranscriptionService = GetInstanceOfAwsTranscriptionService()
+var UsedTranscriptionService = GetInstanceOfGoogleTranscriptionService()
 
 func SetupTranscription() error {
   UsedTranscriptionService.SetTranscriptionReceiver(transcriptionReceiver)

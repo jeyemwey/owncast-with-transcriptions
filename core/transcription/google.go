@@ -3,10 +3,10 @@ package transcription
 import (
 	"context"
 	"io"
-  "sync"
-  "time"
+	"sync"
+	"time"
 
-  speech "cloud.google.com/go/speech/apiv1"
+	speech "cloud.google.com/go/speech/apiv1"
 	log "github.com/sirupsen/logrus"
 	speechpb "google.golang.org/genproto/googleapis/cloud/speech/v1"
 )
@@ -125,7 +125,7 @@ func (g *GoogleTranscriptionService) SetConnected() {
         }
       }
       if deliverymethod == "websockets" {
-        SendTranscriptionToWebsocket(bestAlternative.Transcript, time.Since(g.timeConnected).Nanoseconds())
+        go SendTranscriptionToWebsocket(bestAlternative.Transcript, time.Since(g.timeConnected).Nanoseconds())
       } else if deliverymethod == "webvtt" {
         endTime := result.GetResultEndTime().AsDuration()
         recognition := Recognition{

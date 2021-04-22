@@ -54,7 +54,8 @@ export default class Subtitles extends Component {
     const {
       body,
       type,
-      timeSinceBegin
+      timeSinceBegin,
+      activeHlsSegments
     } = message;
 
     if (!this.props.isPlaying) {
@@ -65,7 +66,20 @@ export default class Subtitles extends Component {
       return;
     }
 
-    this.setState({currentSubtitle: body.replace(/<[^>]*>/g, '')});
+    const msgSegmentComparedToGlobalStateSegment = typeof window.activeHlsStream == "undefined" ? 0 : activeHlsSegments[window.activeHlsStream].compareLocale(window.loadedHlsSegment);
+
+    switch (msgSegmentComparedToGlobalStateSegment) {
+      case (0): // message and window is equal = display now!
+        this.setState({currentSubtitle: body.replace(/<[^>]*>/g, '')});
+        break;
+      case (-1): // playback state is before than message = come back later
+        setTimeout(() => {
+          this.receivedWebsocketMessage(message);
+        }, 200);
+        break;
+      case (1): // playback state is later than the message.
+        return;
+    }
   }
 
   render() {

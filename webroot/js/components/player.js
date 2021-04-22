@@ -74,15 +74,15 @@ class OwncastPlayer {
     this.addAirplay();
     this.vjsPlayer.ready(this.handleReady);
 
-    this.vjsPlayer.overlay({
-      content: 'Default overlay content',
-      debug: true,
-      overlays: [{
-        content: 'This is a test-overlay!',
-        start: 'play',
-        end: 'pause'
-      }]
-    });
+    // this.vjsPlayer.overlay({
+    //   content: 'Default overlay content',
+    //   debug: true,
+    //   overlays: [{
+    //     content: 'This is a test-overlay!',
+    //     start: 'play',
+    //     end: 'pause'
+    //   }]
+    // });
   }
 
   setupPlayerCallbacks(callbacks) {
@@ -112,7 +112,7 @@ class OwncastPlayer {
     this.vjsPlayer.on('paused', this.handlePause);
     this.vjsPlayer.on('volumechange', this.handleVolume);
     this.vjsPlayer.on('ended', this.handleEnded);
-    this.vjsPlayer.on('loadedmetadata', (ev) => console.log(ev));
+    // this.vjsPlayer.on('loadedmetadata', (ev) => console.log(ev));
 
     if (this.appPlayerReadyCallback) {
       // start polling

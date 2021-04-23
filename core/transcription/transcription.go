@@ -1,13 +1,14 @@
 package transcription
 
 import (
-  "encoding/json"
-  "fmt"
-  log "github.com/sirupsen/logrus"
-  "sync"
-  "time"
+	"encoding/json"
+	"fmt"
+	"sync"
+	"time"
 
-  "github.com/owncast/owncast/core/data"
+	log "github.com/sirupsen/logrus"
+
+	"github.com/owncast/owncast/core/data"
 )
 
 var (
@@ -16,8 +17,6 @@ var (
   numberOfChoppedSegmentsMut sync.RWMutex
   numberOfChoppedSegments    int32
 )
-
-var UsedTranscriptionService = GetInstanceOfGoogleTranscriptionService()
 
 func SetupTranscription() error {
   UsedTranscriptionService.SetTranscriptionReceiver(transcriptionReceiver)

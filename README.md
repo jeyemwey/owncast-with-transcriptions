@@ -11,9 +11,9 @@ For any issues besides the transcription, please visit the [Owncast issues page]
 ## Building from Source with Google integration
 
 1. Make sure you have a GCP account with a project and a service account. Activate the "Speech-to-Text" feature and download a JSON key.
-2. Clone the repo.
-3. Edit `startWithGoogle.sh` to contain the path to your key file.
-4. `./startWithGoogle.sh`
+1. Clone the repo.
+1. Edit `startWithGoogle.sh` to contain the path to your key file.
+1. `./startWithGoogle.sh`
 
 ## Building from Source with Azure integration
 

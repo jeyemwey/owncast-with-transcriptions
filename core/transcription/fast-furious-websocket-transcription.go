@@ -4,7 +4,6 @@ import (
   "fmt"
   "github.com/owncast/owncast/core/chat"
   "github.com/owncast/owncast/models"
-  log "github.com/sirupsen/logrus"
   "strings"
   "sync"
   "time"
@@ -73,7 +72,6 @@ func SaveSegmentPlayout(path string) {
 		ActiveHlsSegments = make(map[string]string)
 	}
 
-	log.Infof("Saved segment: %s", path)
 	variant := strings.Split(path, "/")[1]
 	ActiveHlsSegments[variant] = path
 }

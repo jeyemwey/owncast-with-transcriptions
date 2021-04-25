@@ -89,7 +89,6 @@
     <script>
       navigator.serviceWorker.register("/sw.js")
       .then(registration => {
-        console.log("success!");
         if (registration.installing) {
           registration.installing.postMessage("Howdy from your installing page.");
         }

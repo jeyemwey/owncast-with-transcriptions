@@ -64,6 +64,7 @@ export default class App extends Component {
       streamStatusMessage: MESSAGE_OFFLINE,
       viewerCount: '',
       currentStreamTime: 0,
+      hasTranscriptionEnabled: false,
 
       // dom
       windowWidth: window.innerWidth,
@@ -180,7 +181,7 @@ export default class App extends Component {
   }
 
   setConfigData(data = {}) {
-    const { name, summary } = data;
+    const { name, summary, enableTranscriptions } = data;
     window.document.title = name;
 
     this.setState({
@@ -188,6 +189,7 @@ export default class App extends Component {
         ...data,
         summary: summary && addNewlines(summary),
       },
+      hasTranscriptionEnabled: enableTranscriptions,
     });
   }
 
@@ -405,6 +407,7 @@ export default class App extends Component {
       configData,
       displayChat,
       isPlaying,
+      hasTranscriptionEnabled,
       orientation,
       playerActive,
       streamOnline,
@@ -515,6 +518,7 @@ export default class App extends Component {
           <${Subtitles}
             websocket=${websocket}
             isPlaying=${this.state.isPlaying}
+            hasTranscriptionEnabled=${hasTranscriptionEnabled}
           />
           <div
             id="video-container"

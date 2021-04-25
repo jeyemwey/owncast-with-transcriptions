@@ -15,6 +15,7 @@ import (
 
 	"github.com/nareix/joy5/format/rtmp"
 	"github.com/owncast/owncast/core/data"
+	"github.com/owncast/owncast/core/transcription"
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/utils"
 )
@@ -64,6 +65,8 @@ func Start(setStreamAsConnected func(), setBroadcaster func(models.Broadcaster))
 	}
 }
 
+var transcriptionPipeMuxer *flv.Muxer
+
 func HandleConn(c *rtmp.Conn, nc net.Conn) {
 	c.LogTagEvent = func(isRead bool, t flvio.Tag) {
 		if t.Type == flvio.TAG_AMF0 {
@@ -107,19 +110,21 @@ func HandleConn(c *rtmp.Conn, nc net.Conn) {
 	}
 	streamPipeMuxer := flv.NewMuxer(streamPipeHandle)
 
-	transcriptionPath := utils.GetTemporaryTranscriptionPipePath()
-	if !utils.DoesFileExists(transcriptionPath) {
-		err := syscall.Mkfifo(transcriptionPath, 0666)
-		if err != nil {
-		log.Fatalln(err)
-		}
-	}
+  if transcription.EnableTranscriptions {
+    transcriptionPath := utils.GetTemporaryTranscriptionPipePath()
+    if !utils.DoesFileExists(transcriptionPath) {
+      err := syscall.Mkfifo(transcriptionPath, 0666)
+      if err != nil {
+        log.Fatalln(err)
+      }
+    }
 
-	transcriptionFileHandle, err := os.OpenFile(transcriptionPath, os.O_RDWR, os.ModeNamedPipe)
-	if err != nil {
-		log.Fatalln("unable to open", streamPipePath, "and will exit")
-	}
-	transcriptionPipeMuxer := flv.NewMuxer(transcriptionFileHandle)
+    transcriptionFileHandle, err := os.OpenFile(transcriptionPath, os.O_RDWR, os.ModeNamedPipe)
+    if err != nil {
+      log.Fatalln("unable to open", streamPipePath, "and will exit")
+    }
+    transcriptionPipeMuxer = flv.NewMuxer(transcriptionFileHandle)
+  }
 
 
 	for {
@@ -148,15 +153,17 @@ func HandleConn(c *rtmp.Conn, nc net.Conn) {
 		}
 
 		if err := streamPipeMuxer.WritePacket(pkt); err != nil {
-		log.Errorln("unable to write rtmp packet to stream pipe", err)
-		handleDisconnect(nc)
-		return
+      log.Errorln("unable to write rtmp packet to stream pipe", err)
+      handleDisconnect(nc)
+      return
 		}
 
-		if err := transcriptionPipeMuxer.WritePacket(pkt); err != nil {
-		log.Errorln("unable to write rtmp packet to transcription pipe", err)
-		handleDisconnect(nc)
-		return
+		if transcription.EnableTranscriptions {
+      if err := transcriptionPipeMuxer.WritePacket(pkt); err != nil {
+        log.Errorln("unable to write rtmp packet to transcription pipe", err)
+        handleDisconnect(nc)
+        return
+      }
 		}
 	}
 }

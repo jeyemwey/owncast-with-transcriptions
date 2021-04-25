@@ -83,6 +83,10 @@ export default class Subtitles extends Component {
   }
 
   render() {
+    if (!this.props.hasTranscriptionEnabled) {
+      return null;
+    }
+
     return html`<div id="subtitles-box" class="absolute z-50 left-0 p-4 w-8/12" style="bottom: 10%; pointer-events: none">
       <span class="bg-black text-white text-3xl leading-tight" dangerouslySetInnerHTML=${{ __html: this.state.currentSubtitle }}></span>
     </div>`

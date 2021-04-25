@@ -15,11 +15,19 @@ var (
 )
 
 func SetConnected() {
+  if !EnableTranscriptions {
+    return
+  }
+
   go StartAudioTranscodingForTranscriptionService()
   go UsedTranscriptionService.SetConnected()
 }
 
 func SetDisconnected() {
+  if !EnableTranscriptions {
+    return
+  }
+
   go UsedTranscriptionService.SetDisconnected()
 
   if webVttRenderTicker == nil {

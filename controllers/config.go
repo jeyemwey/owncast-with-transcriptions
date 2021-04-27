@@ -50,7 +50,7 @@ func GetWebConfig(w http.ResponseWriter, r *http.Request) {
 		ExtraPageContent: pageContent,
 		StreamTitle:      data.GetStreamTitle(),
 		SocialHandles:    socialHandles,
-    EnableTranscriptions: transcription.EnableTranscriptions,
+    EnableTranscriptions: transcription.Config.EnableTranscription,
 	}
 
 	if err := json.NewEncoder(w).Encode(configuration); err != nil {

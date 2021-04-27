@@ -19,7 +19,7 @@ var (
 )
 
 func SetupTranscription() error {
-  UsedTranscriptionService.SetTranscriptionReceiver(transcriptionReceiver)
+  Config.UsedTranscriptionService.SetTranscriptionReceiver(transcriptionReceiver)
 
   subtitleSegments = make(map[string]*WebVttFile)
 

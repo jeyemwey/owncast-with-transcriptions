@@ -24,6 +24,11 @@ For any issues besides the transcription, please visit the [Owncast issues page]
 1. `./startWithAzure.sh` will run from source.
 1. Point your [broadcasting software](https://owncast.online/docs/broadcasting/) at your new server and start streaming.
 
+## Configuration
+
+Copy the `transcription-example.yaml` file to `transcription.yaml` and edit accordingly.
+Edit the configuration according to the documentation.
+
 <!-- LICENSE -->
 ## License
 

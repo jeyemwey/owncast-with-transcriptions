@@ -36,3 +36,4 @@ backup/
 !webroot/js/web_modules/**/dist
 !core/data
 test/test.db
+transcription.yaml

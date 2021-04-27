@@ -15,20 +15,20 @@ var (
 )
 
 func SetConnected() {
-  if !EnableTranscriptions {
+  if !Config.EnableTranscription {
     return
   }
 
   go StartAudioTranscodingForTranscriptionService()
-  go UsedTranscriptionService.SetConnected()
+  go Config.UsedTranscriptionService.SetConnected()
 }
 
 func SetDisconnected() {
-  if !EnableTranscriptions {
+  if !Config.EnableTranscription {
     return
   }
 
-  go UsedTranscriptionService.SetDisconnected()
+  go Config.UsedTranscriptionService.SetDisconnected()
 
   if webVttRenderTicker == nil {
     log.Debug("Trying to stop timer that was not set")

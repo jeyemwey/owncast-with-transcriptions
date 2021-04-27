@@ -15,7 +15,7 @@ const SUBTITLES_PLAYLIST_FILE = "subtitles.m3u8"
 
 func RewriteMasterFile(path string) {
 
-  if deliverymethod != "webvtt" || !EnableTranscriptions {
+  if deliverymethod != "webvtt" || !Config.EnableTranscription {
     return
   }
 

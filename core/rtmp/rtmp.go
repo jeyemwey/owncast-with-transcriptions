@@ -110,7 +110,7 @@ func HandleConn(c *rtmp.Conn, nc net.Conn) {
 	}
 	streamPipeMuxer := flv.NewMuxer(streamPipeHandle)
 
-  if transcription.EnableTranscriptions {
+  if transcription.Config.EnableTranscription {
     transcriptionPath := utils.GetTemporaryTranscriptionPipePath()
     if !utils.DoesFileExists(transcriptionPath) {
       err := syscall.Mkfifo(transcriptionPath, 0666)
@@ -158,7 +158,7 @@ func HandleConn(c *rtmp.Conn, nc net.Conn) {
       return
 		}
 
-		if transcription.EnableTranscriptions {
+		if transcription.Config.EnableTranscription {
       if err := transcriptionPipeMuxer.WritePacket(pkt); err != nil {
         log.Errorln("unable to write rtmp packet to transcription pipe", err)
         handleDisconnect(nc)

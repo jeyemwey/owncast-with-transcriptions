@@ -44,7 +44,7 @@ func (a *AwsTranscriptionService) SetConnected()  {
   a.client = tss.New(a.sess)
 
   a.resp, a.err = a.client.StartStreamTranscription(&tss.StartStreamTranscriptionInput{
-    LanguageCode:         aws.String(awsLanguage),
+    LanguageCode:         aws.String(Config.Language),
     MediaEncoding:        aws.String(tss.MediaEncodingPcm),
     MediaSampleRateHertz: aws.Int64(16000),
   })
@@ -105,10 +105,14 @@ func (a *AwsTranscriptionService) SetDisconnected()  {
 }
 
 func (a *AwsTranscriptionService) HandlePcmData(b []byte) {
+  if a.pcmWriter == nil {
+    log.Info("Writer is nil, dropping chunk")
+    return
+  }
+
   _, err := a.pcmWriter.Write(b)
   if err != nil {
     // Cannot write to writer when pipe is closed, e.g. because the stream stopped.
-    // TODO: Downgrade to Debug statement
     log.Debugf("unable to write to writer: %v", err)
   }
 }

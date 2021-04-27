@@ -48,10 +48,12 @@ func Start() error {
 		return err
 	}
 
-	if err := transcription.SetupTranscription(); err != nil {
-	  log.Error("failed to setup the transcription")
-	  return err
-  	}
+	if transcription.Config.EnableTranscription {
+    if err := transcription.SetupTranscription(); err != nil {
+      log.Error("failed to setup the transcription")
+      return err
+    }
+  }
 
 	// The HLS handler takes the written HLS playlists and segments
 	// and makes storage decisions.  It's rather simple right now

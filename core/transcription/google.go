@@ -67,7 +67,7 @@ func (g *GoogleTranscriptionService) SetConnected() {
           Config: &speechpb.RecognitionConfig{
           Encoding:                   speechpb.RecognitionConfig_LINEAR16,
           SampleRateHertz:            16000,
-          LanguageCode:               gcpLanguage,
+          LanguageCode:               Config.Language,
           EnableAutomaticPunctuation: true,
           MaxAlternatives: 8,
         },

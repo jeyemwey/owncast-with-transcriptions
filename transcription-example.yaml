@@ -1,0 +1,7 @@
+enableTranscription: true
+service: gcp
+language: en-UK
+
+azure:
+  region: westeurope
+  key: abcdef1234

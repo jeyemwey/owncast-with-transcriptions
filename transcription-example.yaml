@@ -1,6 +1,6 @@
-enableTranscription: true
+enableTranscription: yes
 service: gcp
-language: en-UK
+language: en-GB
 
 azure:
   region: westeurope

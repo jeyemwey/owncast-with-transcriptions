@@ -64,7 +64,10 @@ export default class App extends Component {
       streamStatusMessage: MESSAGE_OFFLINE,
       viewerCount: '',
       currentStreamTime: 0,
+
+      // subtitles
       hasTranscriptionEnabled: false,
+      showSubtitles: false,
 
       // dom
       windowWidth: window.innerWidth,
@@ -81,6 +84,7 @@ export default class App extends Component {
 
     // misc dom events
     this.handleChatPanelToggle = this.handleChatPanelToggle.bind(this);
+    this.handleShowSubtitlesToggle = this.handleShowSubtitlesToggle.bind(this);
     this.handleUsernameChange = this.handleUsernameChange.bind(this);
     this.handleFormFocus = this.handleFormFocus.bind(this);
     this.handleFormBlur = this.handleFormBlur.bind(this);
@@ -190,6 +194,7 @@ export default class App extends Component {
         summary: summary && addNewlines(summary),
       },
       hasTranscriptionEnabled: enableTranscriptions,
+      showSubtitles: enableTranscriptions,
     });
   }
 
@@ -353,6 +358,13 @@ export default class App extends Component {
     });
   }
 
+  handleShowSubtitlesToggle() {
+    const {hasTranscriptionEnabled, showSubtitles} = this.state;
+    if (hasTranscriptionEnabled) {
+      this.setState({showSubtitles: !showSubtitles});
+    }
+  }
+
   disableChatInput() {
     this.setState({
       chatInputEnabled: false,
@@ -414,6 +426,7 @@ export default class App extends Component {
       streamStatusMessage,
       streamTitle,
       touchKeyboardActive,
+      showSubtitles,
       username,
       viewerCount,
       websocket,
@@ -519,6 +532,7 @@ export default class App extends Component {
             websocket=${websocket}
             isPlaying=${this.state.isPlaying}
             hasTranscriptionEnabled=${hasTranscriptionEnabled}
+            showSubtitles=${showSubtitles}
           />
           <div
             id="video-container"
@@ -538,7 +552,17 @@ export default class App extends Component {
             aria-label="Stream status"
             class="flex text-center flex-row justify-between font-mono py-2 px-8 bg-gray-900 text-indigo-200 shadow-md border-b border-gray-100 border-solid"
           >
-            <span>${streamStatusMessage}</span>
+            <span>
+              ${streamStatusMessage}
+              ${(streamOnline && hasTranscriptionEnabled) && html`<button
+                type="button"
+                id="subtitle-toggle"
+                onClick=${this.handleShowSubtitlesToggle}
+                class="cursor-pointer text-center min-w-12 h-full bg-gray-800 hover:bg-gray-700 px-4 py-1 ml-4 rounded"
+              >
+                ${showSubtitles ? "Hide subtitles" : "Show subtitles"}
+              </button>`}
+            </span>
             <span id="stream-viewer-count">${viewerCountMessage}</span>
           </section>
         </main>

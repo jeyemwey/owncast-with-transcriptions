@@ -83,7 +83,7 @@ export default class Subtitles extends Component {
   }
 
   render() {
-    if (!this.props.hasTranscriptionEnabled) {
+    if (!this.props.hasTranscriptionEnabled || !this.props.showSubtitles) {
       return null;
     }
 

@@ -5,6 +5,7 @@ import (
   "github.com/aws/aws-sdk-go/aws/credentials"
   "github.com/aws/aws-sdk-go/aws/session"
   tss "github.com/aws/aws-sdk-go/service/transcribestreamingservice"
+  "github.com/owncast/owncast/core/timing"
   log "github.com/sirupsen/logrus"
   "io"
   "time"
@@ -33,6 +34,7 @@ func GetInstanceOfAwsTranscriptionService() *AwsTranscriptionService {
 }
 
 func (a *AwsTranscriptionService) SetConnected()  {
+  timing.D.CloudStarted = time.Now()
   a.sess, a.err = session.NewSession(&aws.Config{
     Region:      aws.String("us-west-2"),
     Credentials: credentials.NewSharedCredentials("", "bsc-thesis"),
@@ -67,6 +69,7 @@ func (a *AwsTranscriptionService) SetConnected()  {
     }
   }()
 
+  timing.D.CloudConnected = time.Now()
 
   for event := range a.stream.Events() {
     switch e := event.(type) {

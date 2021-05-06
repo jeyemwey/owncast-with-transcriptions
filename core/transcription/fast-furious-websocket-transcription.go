@@ -3,6 +3,7 @@ package transcription
 import (
   "fmt"
   "github.com/owncast/owncast/core/chat"
+  "github.com/owncast/owncast/core/timing"
   "github.com/owncast/owncast/models"
   "strings"
   "sync"
@@ -17,6 +18,13 @@ var lwp_mx sync.Mutex
 // duration between the pushs. Every request to push that is too close to the
 // last request is dropped to keep the latency down.
 func SendTranscriptionToWebsocket(body string, ns_since_begin int64) {
+  go func() {
+    timing.D.CloudResponses = append(timing.D.CloudResponses, struct {
+      Time time.Time
+      Text string
+    }{Time: time.Now(), Text: body})
+  }()
+
 	lwp_mx.Lock()
 	defer lwp_mx.Unlock()
 	if time.Since(lastWebsocketPush) < 400*time.Millisecond {

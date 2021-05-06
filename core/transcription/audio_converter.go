@@ -2,11 +2,14 @@ package transcription
 
 import (
 	"fmt"
-	"io"
+  "github.com/owncast/owncast/core/timing"
+  "io"
 	"os/exec"
 	"strings"
+  "sync"
+  "time"
 
-	"github.com/owncast/owncast/core/data"
+  "github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/utils"
 	log "github.com/sirupsen/logrus"
 )
@@ -34,14 +37,22 @@ func StartAudioTranscodingForTranscriptionService() {
     return
   }
 
+  timing.D.TranscodingStarted = time.Now()
+
   if err = cmd.Start(); err != nil {
     log.Error(err)
     return
   }
 
+  var once sync.Once
+
   pcmChunk := make([]byte, pcmChunkLen)
   for {
     pcmLength, err := stdout.Read(pcmChunk)
+
+    go once.Do(func() {
+        timing.D.TranscodingReturnedFirstResult = time.Now()
+      })
 
     if pcmLength > 0 {
       validPcmBytes := pcmChunk[:pcmLength]

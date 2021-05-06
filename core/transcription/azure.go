@@ -16,8 +16,10 @@ import (
   "fmt"
   "github.com/Microsoft/cognitive-services-speech-sdk-go/audio"
   "github.com/Microsoft/cognitive-services-speech-sdk-go/speech"
+  "github.com/owncast/owncast/core/timing"
   log "github.com/sirupsen/logrus"
   "os"
+  "time"
 )
 
 type AzureTranscriptionService struct {
@@ -32,7 +34,7 @@ type AzureTranscriptionService struct {
 }
 
 func (a *AzureTranscriptionService) SetConnected() {
-
+  timing.D.CloudStarted = time.Now()
   a.stream, a.err = audio.CreatePushAudioInputStream()
   log.Info("Started Audio Stream")
   if a.err != nil {
@@ -104,6 +106,7 @@ func (a *AzureTranscriptionService) SetConnected() {
 
 func logSessionWithAnnotation(s string) speech.SessionEventHandler {
   return func(event speech.SessionEventArgs) {
+    timing.D.CloudConnected = time.Now()
     defer event.Close()
     fmt.Println(s, event.SessionID)
   }

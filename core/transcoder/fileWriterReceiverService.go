@@ -1,19 +1,21 @@
 package transcoder
 
 import (
-	"bytes"
-	"io"
-	"net"
-	"os"
-	"path/filepath"
-	"strings"
+  "bytes"
+  "github.com/owncast/owncast/core/timing"
+  "io"
+  "net"
+  "os"
+  "path/filepath"
+  "strings"
+  "time"
 
-	"net/http"
+  "net/http"
 
-	"github.com/owncast/owncast/config"
-	"github.com/owncast/owncast/core/transcription"
-	"github.com/owncast/owncast/utils"
-	log "github.com/sirupsen/logrus"
+  "github.com/owncast/owncast/config"
+  "github.com/owncast/owncast/core/transcription"
+  "github.com/owncast/owncast/utils"
+  log "github.com/sirupsen/logrus"
 )
 
 // FileWriterReceiverServiceCallback are to be fired when transcoder responses are written to disk.
@@ -83,15 +85,25 @@ func (s *FileWriterReceiverService) uploadHandler(w http.ResponseWriter, r *http
 	w.WriteHeader(http.StatusOK)
 }
 
+
 func (s *FileWriterReceiverService) fileWritten(path string) {
 	if utils.GetRelativePathFromAbsolutePath(path) == "hls/stream.m3u8" {
-	  	transcription.RewriteMasterFile(path)
+    go timing.OnceMaster.Do(func() {
+      timing.D.FirstMasterPlaylist = time.Now()
+    })
+  	transcription.RewriteMasterFile(path)
 		s.callbacks.MasterPlaylistWritten(path)
 	} else if strings.HasSuffix(path, ".ts") || strings.HasSuffix(path, ".webvtt") {
+	  go timing.OnceSegment.Do(func() {
+      timing.D.FirstTsFile = time.Now()
+    })
 		go transcription.SaveSegmentPlayout(path)
 		s.callbacks.SegmentWritten(path)
 	} else if strings.HasSuffix(path, ".m3u8") {
-		s.callbacks.VariantPlaylistWritten(path)
+    go timing.OnceTrack.Do(func() {
+      timing.D.FirstTrackPlaylist = time.Now()
+    })
+	  s.callbacks.VariantPlaylistWritten(path)
 	}
 }
 

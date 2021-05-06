@@ -2,7 +2,8 @@ package transcription
 
 import (
 	"context"
-	"io"
+  "github.com/owncast/owncast/core/timing"
+  "io"
 	"sync"
 	"time"
 
@@ -40,6 +41,8 @@ func (g *GoogleTranscriptionService) SetTranscriptionReceiver(receiver Transcrip
 }
 
 func (g *GoogleTranscriptionService) SetConnected() {
+  timing.D.CloudStarted = time.Now()
+
   g.TimeConnectedResetMutex.Do(func() {
     g.timeConnected = time.Now()
     g.pcmChan = make(chan []byte)
@@ -111,6 +114,8 @@ func (g *GoogleTranscriptionService) SetConnected() {
       log.Fatalf("Could not recognize: %v", err)
     }
     for _, result := range resp.Results {
+
+      timing.D.CloudConnected = time.Now()
 
       if result.Stability < 0.6 || result.IsFinal {
         continue

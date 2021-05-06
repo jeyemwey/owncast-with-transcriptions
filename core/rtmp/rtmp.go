@@ -2,11 +2,13 @@ package rtmp
 
 import (
 	"fmt"
-	"io"
+  "github.com/owncast/owncast/core/timing"
+  "io"
 	"net"
 	"os"
 	"strings"
-	"syscall"
+  "sync"
+  "syscall"
 	"time"
 
 	"github.com/nareix/joy5/format/flv"
@@ -90,7 +92,12 @@ func HandleConn(c *rtmp.Conn, nc net.Conn) {
 	}
 
 	log.Infoln("Inbound stream connected.")
-	_setStreamAsConnected()
+	timing.D.Connected = time.Now()
+  *&timing.OnceMaster = sync.Once{}
+  *&timing.OnceSegment = sync.Once{}
+  *&timing.OnceTrack = sync.Once{}
+
+  _setStreamAsConnected()
 
 	streamPipePath := utils.GetTemporaryPipePath()
 	if !utils.DoesFileExists(streamPipePath) {

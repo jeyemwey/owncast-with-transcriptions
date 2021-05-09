@@ -91,6 +91,7 @@ func (g *GoogleTranscriptionService) SetConnected() {
   lastResultEndTime := 0 * time.Nanosecond
   log.Info("Started looking for responses from Google")
 
+  timing.D.CloudConnected = time.Now()
   for {
     resp, err := g.stream.Recv()
     if err == io.EOF {
@@ -114,8 +115,6 @@ func (g *GoogleTranscriptionService) SetConnected() {
       log.Fatalf("Could not recognize: %v", err)
     }
     for _, result := range resp.Results {
-
-      timing.D.CloudConnected = time.Now()
 
       if result.Stability < 0.6 || result.IsFinal {
         continue

@@ -1,11 +1,12 @@
 package timing
 
 import (
-  "encoding/json"
-  log "github.com/sirupsen/logrus"
-  "io/ioutil"
-  "sync"
-  "time"
+	"encoding/json"
+	"io/ioutil"
+	"sync"
+	"time"
+
+	log "github.com/sirupsen/logrus"
 )
 
 var (
@@ -37,7 +38,7 @@ var (
 )
 
 
-func init() {
+func CallConnected() {
   time.AfterFunc(1 * time.Minute, func() {
     bytes, err := json.Marshal(D)
     if err != nil {
@@ -45,7 +46,7 @@ func init() {
       return
     }
 
-    if err := ioutil.WriteFile("azure.json", bytes, 0644); err != nil {
+    if err := ioutil.WriteFile("gcp-de.json", bytes, 0644); err != nil {
       log.Error(err)
     }
   })

@@ -12,6 +12,7 @@ import (
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/core/rtmp"
+	"github.com/owncast/owncast/core/timing"
 	"github.com/owncast/owncast/core/transcoder"
 	"github.com/owncast/owncast/core/transcription"
 	"github.com/owncast/owncast/core/webhooks"
@@ -60,6 +61,7 @@ func setStreamAsConnected() {
 		segmentPath = config.PrivateHLSStoragePath
 	}
 	go transcription.SetConnected()
+	go timing.CallConnected()
 
 	go func() {
 		_transcoder = transcoder.NewTranscoder()

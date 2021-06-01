@@ -12,8 +12,8 @@ For any issues besides the transcription, please visit the [Owncast issues page]
 
 1. Make sure you have a GCP account with a project and a service account. Activate the "Speech-to-Text" feature and download a JSON key.
 1. Clone the repo.
-1. Edit `startWithGoogle.sh` to contain the path to your key file.
-1. `./startWithGoogle.sh`
+1. Edit `start.sh` to contain the path to your key file.
+1. `./start.sh`
 
 ## Building from Source with Azure integration
 
@@ -21,7 +21,8 @@ For any issues besides the transcription, please visit the [Owncast issues page]
 1. Install the [Go toolchain](https://golang.org/dl/).
 1. Install the [Microsoft Azure Speech SDK for Go](https://docs.microsoft.com/en-us/azure/cognitive-services/speech-service/quickstarts/setup-platform?tabs=dotnet%2Clinux%2Cjre%2Cbrowser&pivots=programming-language-go)
 1. Clone the repo.  `git clone https://github.com/owncast/owncast`
-1. `./startWithAzure.sh` will run from source.
+1. Update `start.sh` to contain the right paths.
+1. `./start.sh` will run from source.
 1. Point your [broadcasting software](https://owncast.online/docs/broadcasting/) at your new server and start streaming.
 
 ## Configuration

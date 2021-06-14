@@ -8,13 +8,19 @@ This fork appeared after the [v0.0.6 release](https://owncast.online/releases/ow
 
 For any issues besides the transcription, please visit the [Owncast issues page](https://github.com/owncast/owncast/issues) and our [RocketChat](https://owncast.rocket.chat).
 
-## Building from Source with Google integration
+## Building from Source with AWS integration
 
-1. Make sure you have a GCP account with a project and a service account. Activate the "Speech-to-Text" feature and download a JSON key.
-1. Clone the repo.
-1. Edit `start.sh` to contain the path to your key file.
-1. `./start.sh`
-
+1. Create an AWS account if you don't have one already.
+1. In IAM, create an user with "Programmatic Access" and access to `AmazonTranscribeFullAccess`.
+1. Generate a key pair and save it in `$HOME/.aws/credentials`:
+  ```
+  [default]
+  aws_access_key_id = <Access key ID>
+  aws_secret_access_key = <Secret access key>
+  ```
+1. Configure the application acc. to the instructions below.
+1. Start the application with `./start.sh`.
+  
 ## Building from Source with Azure integration
 
 1. Ensure you have the gcc compiler configured.
@@ -24,6 +30,13 @@ For any issues besides the transcription, please visit the [Owncast issues page]
 1. Update `start.sh` to contain the right paths.
 1. `./start.sh` will run from source.
 1. Point your [broadcasting software](https://owncast.online/docs/broadcasting/) at your new server and start streaming.
+
+## Building from Source with Google integration
+
+1. Make sure you have a GCP account with a project and a service account. Activate the "Speech-to-Text" feature and download a JSON key.
+1. Clone the repo (see Azure).
+1. Edit `start.sh` to contain the path to your key file.
+1. `./start.sh`
 
 ## Configuration
 

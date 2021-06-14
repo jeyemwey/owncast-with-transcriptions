@@ -70,25 +70,29 @@ func (a *AzureTranscriptionService) SetConnected() {
     logJson(event)
   })
 
-  a.speechRecognizer.Recognizing(func(event speech.SpeechRecognitionEventArgs) {
-    defer event.Close()
+  if deliverymethod == "websockets" {
+    a.speechRecognizer.Recognizing(func(event speech.SpeechRecognitionEventArgs) {
+      defer event.Close()
 
-    SendTranscriptionToWebsocket(event.Result.Text, event.Result.Offset.Nanoseconds())
-  })
+      SendTranscriptionToWebsocket(event.Result.Text, event.Result.Offset.Nanoseconds())
+    })
+  }
 
-  //a.speechRecognizer.Recognized(func(event speech.SpeechRecognitionEventArgs) {
-  //  defer event.Close()
-  //
-  //  log.Info("Got a recognition:")
-  //  logJson(event.Result)
-  //
-  //  a.TranscriptionReceiver(Recognition{
-  //    Text:     event.Result.Text,
-  //    Begin:    event.Result.Offset,
-  //    End:      event.Result.Offset + event.Result.Duration,
-  //    Duration: event.Result.Duration,
-  //  })
-  //})
+  if deliverymethod == "webvtt" {
+    a.speechRecognizer.Recognized(func(event speech.SpeechRecognitionEventArgs) {
+      defer event.Close()
+
+      log.Info("Got a recognition:")
+      logJson(event.Result)
+
+      a.TranscriptionReceiver(Recognition{
+        Text:     event.Result.Text,
+        Begin:    event.Result.Offset,
+        End:      event.Result.Offset + event.Result.Duration,
+        Duration: event.Result.Duration,
+      })
+    })
+  }
 
   errChan := a.speechRecognizer.StartContinuousRecognitionAsync()
   go func() {

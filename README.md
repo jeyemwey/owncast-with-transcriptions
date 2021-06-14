@@ -43,6 +43,11 @@ For any issues besides the transcription, please visit the [Owncast issues page]
 Copy the `transcription-example.yaml` file to `transcription.yaml` and edit accordingly.
 Edit the configuration according to the documentation.
 
+## Use WebVTT instead of WebSockets
+
+This build usually uses the WebSockets delivery method, since it works better in most environments.
+If you are looking to use WebVTT instead, please edit `./start.sh` to build Owncast with `-tags webvtt`.
+
 <!-- LICENSE -->
 ## License
 
